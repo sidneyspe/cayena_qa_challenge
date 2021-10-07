@@ -1,0 +1,3518 @@
+{
+	"info": {
+		"_postman_id": "fa0bfec2-3be0-49ad-90bd-54ee0e09a5d4",
+		"name": "Cayena_features",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[AUTH] Authorization",
+			"item": [
+				{
+					"name": "GetToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Check access_token not null or undefined\", () => {",
+									"    pm.expect(jsonData.access_token).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check token_type not null or undefined\", () => {",
+									"    pm.expect(jsonData.token_type).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check refresh_token not null or undefined\", () => {",
+									"    pm.expect(jsonData.refresh_token).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check expires_in not null or undefined\", () => {",
+									"    pm.expect(jsonData.expires_in).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check scope not null or undefined\", () => {",
+									"    pm.expect(jsonData.scope).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check jti not null or undefined\", () => {",
+									"    pm.expect(jsonData.jti).is.not.oneOf([null, undefined])",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", \"Bearer \" + res.json().access_token);\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"let token = pm.environment.get(\"token\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "cayena-test",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "dd3ed90e-667f-4248-a671-9266261dba5b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "admin@cayena.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/oauth/token",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[CRUD] Supplier Successfull",
+			"item": [
+				{
+					"name": "Create new supplier successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  supplier = pm.response.json();",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"supplier_id\",supplier.publicId);",
+									"",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora B\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List all suppliers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"let supplier = jsonData[0];",
+									"pm.environment.set(\"supplier_id\",supplier.publicId);",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Check publicId not null or undefined\", () => {",
+									"    pm.expect(supplier.publicId).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check publicId is a string\", () => {",
+									"    pm.expect(supplier.publicId).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check name not null or undefined\", () => {",
+									"    pm.expect(supplier.name).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check name is a string\", () => {",
+									"    pm.expect(supplier.name).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check cnpj not null or undefined\", () => {",
+									"    pm.expect(supplier.cnpj).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Validate CNPJ regex\", () => {",
+									"    pm.expect(supplier.cnpj).to.match(/^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}\\-\\d{2}$/);",
+									"})",
+									"",
+									"pm.test(\"Check phoneNumber not null or undefined\", () => {",
+									"    pm.expect(supplier.phoneNumber).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check phoneNumber is a string\", () => {",
+									"    pm.expect(supplier.phoneNumber).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate phoneNumber only numbers\", () => {",
+									"    pm.expect(supplier.phoneNumber).to.match(/^[0-9]*$/);",
+									"})",
+									"",
+									"pm.test(\"Check ownerName not null or undefined\", () => {",
+									"    pm.expect(supplier.ownerName).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check ownerName is a string\", () => {",
+									"    pm.expect(supplier.ownerName).to.be.a('string');",
+									"})",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get supplier previously registered",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  supplier = pm.response.json();",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Check publicId not null or undefined\", () => {",
+									"    pm.expect(supplier.publicId).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check publicId is a string\", () => {",
+									"    pm.expect(supplier.publicId).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check name not null or undefined\", () => {",
+									"    pm.expect(supplier.name).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check name is a string\", () => {",
+									"    pm.expect(supplier.name).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check cnpj not null or undefined\", () => {",
+									"    pm.expect(supplier.cnpj).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Validate CNPJ regex\", () => {",
+									"    pm.expect(supplier.cnpj).to.match(/^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}\\-\\d{2}$/);",
+									"})",
+									"",
+									"pm.test(\"Check phoneNumber not null or undefined\", () => {",
+									"    pm.expect(supplier.phoneNumber).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check phoneNumber is a string\", () => {",
+									"    pm.expect(supplier.phoneNumber).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate phoneNumber only numbers\", () => {",
+									"    pm.expect(supplier.phoneNumber).to.match(/^[0-9]*$/);",
+									"})",
+									"",
+									"pm.test(\"Check ownerName not null or undefined\", () => {",
+									"    pm.expect(supplier.ownerName).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check ownerName is a string\", () => {",
+									"    pm.expect(supplier.ownerName).to.be.a('string');",
+									"})",
+									"",
+									"",
+									"pm.test(\"Check zipCode not null or undefined\", () => {",
+									"    pm.expect(supplier.zipCode).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check zipCode is a string\", () => {",
+									"    pm.expect(supplier.zipCode).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate zipCode only numbers\", () => {",
+									"    pm.expect(supplier.zipCode).to.match(/^\\d{5}-\\d{3}$/);",
+									"})",
+									"",
+									"pm.test(\"Check address not null or undefined\", () => {",
+									"    pm.expect(supplier.address).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check address is a string\", () => {",
+									"    pm.expect(supplier.address).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check number not null or undefined\", () => {",
+									"    pm.expect(supplier.number).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check number is a string\", () => {",
+									"    pm.expect(supplier.number).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate number only numbers\", () => {",
+									"    pm.expect(supplier.number).to.match(/^[0-9]*$/);",
+									"})",
+									"",
+									"pm.test(\"Check complement is a string\", () => {",
+									"    pm.expect(supplier.complement).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check neighborhood not null or undefined\", () => {",
+									"    pm.expect(supplier.neighborhood).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check neighborhood is a string\", () => {",
+									"    pm.expect(supplier.neighborhood).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check city not null or undefined\", () => {",
+									"    pm.expect(supplier.city).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check city is a string\", () => {",
+									"    pm.expect(supplier.city).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check state not null or undefined\", () => {",
+									"    pm.expect(supplier.state).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check state is a string\", () => {",
+									"    pm.expect(supplier.state).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check ownerEmail not null or undefined\", () => {",
+									"    pm.expect(supplier.ownerEmail).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check ownerEmail is a string\", () => {",
+									"    pm.expect(supplier.ownerEmail).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate ownerEmail regex\", () => {",
+									"    pm.expect(supplier.ownerEmail).to.match(/^(([^<>()[\\]\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\\"]{2,})$/i);",
+									"})",
+									"",
+									"pm.test(\"Check ownerPhoneNumber not null or undefined\", () => {",
+									"    pm.expect(supplier.ownerPhoneNumber).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check ownerPhoneNumber is a string\", () => {",
+									"    pm.expect(supplier.ownerPhoneNumber).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate ownerPhoneNumber only numbers\", () => {",
+									"    pm.expect(supplier.ownerPhoneNumber).to.match(/^[0-9]*$/);",
+									"})",
+									"",
+									"pm.test(\"Check createdAt not null or undefined\", () => {",
+									"    pm.expect(supplier.createdAt).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check createdAt is a string\", () => {",
+									"    pm.expect(supplier.createdAt).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check updatedAt not null or undefined\", () => {",
+									"    pm.expect(supplier.updatedAt).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check updatedAt is a string\", () => {",
+									"    pm.expect(supplier.updatedAt).to.be.a('string');",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/{{supplier_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"{{supplier_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update supplier previously registered",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  supplier = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Resquest OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check publicId not null or undefined\", () => {\r",
+									"    pm.expect(supplier.publicId).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check publicId is a string\", () => {\r",
+									"    pm.expect(supplier.publicId).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check name not null or undefined\", () => {\r",
+									"    pm.expect(supplier.name).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check name is a string\", () => {\r",
+									"    pm.expect(supplier.name).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check cnpj not null or undefined\", () => {\r",
+									"    pm.expect(supplier.cnpj).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Validate CNPJ regex\", () => {\r",
+									"    pm.expect(supplier.cnpj).to.match(/^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}\\-\\d{2}$/);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check phoneNumber not null or undefined\", () => {\r",
+									"    pm.expect(supplier.phoneNumber).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check phoneNumber is a string\", () => {\r",
+									"    pm.expect(supplier.phoneNumber).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Validate phoneNumber only numbers\", () => {\r",
+									"    pm.expect(supplier.phoneNumber).to.match(/^[0-9]*$/);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check ownerName not null or undefined\", () => {\r",
+									"    pm.expect(supplier.ownerName).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check ownerName is a string\", () => {\r",
+									"    pm.expect(supplier.ownerName).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"\r",
+									"pm.test(\"Check zipCode not null or undefined\", () => {\r",
+									"    pm.expect(supplier.zipCode).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check zipCode is a string\", () => {\r",
+									"    pm.expect(supplier.zipCode).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Validate zipCode only numbers\", () => {\r",
+									"    pm.expect(supplier.zipCode).to.match(/^\\d{5}-\\d{3}$/);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check address not null or undefined\", () => {\r",
+									"    pm.expect(supplier.address).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check address is a string\", () => {\r",
+									"    pm.expect(supplier.address).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check number not null or undefined\", () => {\r",
+									"    pm.expect(supplier.number).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check number is a string\", () => {\r",
+									"    pm.expect(supplier.number).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Validate number only numbers\", () => {\r",
+									"    pm.expect(supplier.number).to.match(/^[0-9]*$/);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check complement is a string\", () => {\r",
+									"    pm.expect(supplier.complement).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check neighborhood not null or undefined\", () => {\r",
+									"    pm.expect(supplier.neighborhood).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check neighborhood is a string\", () => {\r",
+									"    pm.expect(supplier.neighborhood).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check city not null or undefined\", () => {\r",
+									"    pm.expect(supplier.city).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check city is a string\", () => {\r",
+									"    pm.expect(supplier.city).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check state not null or undefined\", () => {\r",
+									"    pm.expect(supplier.state).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check state is a string\", () => {\r",
+									"    pm.expect(supplier.state).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check ownerEmail not null or undefined\", () => {\r",
+									"    pm.expect(supplier.ownerEmail).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check ownerEmail is a string\", () => {\r",
+									"    pm.expect(supplier.ownerEmail).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Validate ownerEmail regex\", () => {\r",
+									"    pm.expect(supplier.ownerEmail).to.match(/^(([^<>()[\\]\\.,;:\\s@\\\"]+(\\.[^<>()[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\\"]{2,})$/i);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check ownerPhoneNumber not null or undefined\", () => {\r",
+									"    pm.expect(supplier.ownerPhoneNumber).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check ownerPhoneNumber is a string\", () => {\r",
+									"    pm.expect(supplier.ownerPhoneNumber).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Validate ownerPhoneNumber only numbers\", () => {\r",
+									"    pm.expect(supplier.ownerPhoneNumber).to.match(/^[0-9]*$/);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check createdAt not null or undefined\", () => {\r",
+									"    pm.expect(supplier.createdAt).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check createdAt is a string\", () => {\r",
+									"    pm.expect(supplier.createdAt).to.be.a('string');\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check updatedAt not null or undefined\", () => {\r",
+									"    pm.expect(supplier.updatedAt).is.not.oneOf([null, undefined])\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Check updatedAt is a string\", () => {\r",
+									"    pm.expect(supplier.updatedAt).to.be.a('string');\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"{{supplier_id}}\",\n  \"name\": \"Distribuidora teste\",\n  \"cnpj\": \"11.572.592/0002-54\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Rep. do Líbano\",\n  \"number\": \"145\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete supplier previosly registered",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resquest OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/{{supplier_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"{{supplier_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"let base_url = pm.environment.get(\"base_url\");",
+							"pm.sendRequest(",
+							"  {",
+							"    url: base_url + \"/oauth/token\",",
+							"    method: \"POST\",",
+							"    auth: {",
+							"      type: \"basic\",",
+							"      basic: [",
+							"        { key: \"username\", value: \"cayena-test\" },",
+							"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },",
+							"      ],",
+							"    },",
+							"    body: {",
+							"      mode: \"urlencoded\",",
+							"      urlencoded: [",
+							"        {",
+							"          key: \"Content-Type\",",
+							"          value: \"application/x-www-form-urlencoded\",",
+							"          disabled: false,",
+							"        },",
+							"        { key: \"grant_type\", value: \"password\", disabled: false },",
+							"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },",
+							"        { key: \"password\", value: \"123456\", disabled: false },",
+							"      ],",
+							"    },",
+							"  },",
+							"  function (err, res) {",
+							"    if (err) {",
+							"      throw new Error(",
+							"        \"An error occurred during authentication, please review:\\n\" +",
+							"          JSON.stringify(err)",
+							"      );",
+							"    } else {",
+							"      pm.expect(res).to.have.status(200);",
+							"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);",
+							"      pm.environment.set(\"access_token\", res.json().access_token);",
+							"",
+							"    }",
+							"  }",
+							");",
+							"",
+							"let new_supplier =  {",
+							"  name: \"A\",",
+							"  cnpj: \"11.572.592/0002-57\",",
+							"  phoneNumber: \"1111111111\",",
+							"  zipCode: \"222222222\",",
+							"  address: \"Avenida Ibirapuera\",",
+							"  number: \"144\",",
+							"  complement: \"Cj 65\",",
+							"  neighborhood: \"Ibira\",",
+							"  city: \"São Paulo\",",
+							"  state: \"SP\",",
+							"  ownerName: \"João Dias\",",
+							"  ownerEmail: \"jsd@email.com\",",
+							"  ownerPhoneNumber: \"11222233334\",",
+							"};",
+							"",
+							"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "[CREATE] Supplier Errors Handler",
+			"item": [
+				{
+					"name": "Create supply with only a name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(jsonData.code,\"VALIDATION_FAILED\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora A\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create supply with only a cnpj",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(jsonData.code,\"VALIDATION_FAILED\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cnpj\": \"11.572.592/0002-51\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create supply without owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(jsonData.code,\"VALIDATION_FAILED\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora B\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create supply with zipcode pattern wrong",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(jsonData.code,\"VALIDATION_FAILED\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora B\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new supplier successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  supplier = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"supplier_id\",supplier.publicId);",
+									"",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora B\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new supplier with same name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 400 NAME_UNIQUE_KEY_VIOLATION\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(jsonData.code,\"NAME_UNIQUE_KEY_VIOLATION\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora B\",\n  \"cnpj\": \"11.572.592/0002-53\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new supplier with same cnpj",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 400 NAME_UNIQUE_KEY_VIOLATION\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(jsonData.code,\"NAME_UNIQUE_KEY_VIOLATION\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora A\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete supplier previosly registered",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resquest OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/{{supplier_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"{{supplier_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"let base_url = pm.environment.get(\"base_url\");",
+							"pm.sendRequest(",
+							"  {",
+							"    url: base_url + \"/oauth/token\",",
+							"    method: \"POST\",",
+							"    auth: {",
+							"      type: \"basic\",",
+							"      basic: [",
+							"        { key: \"username\", value: \"cayena-test\" },",
+							"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },",
+							"      ],",
+							"    },",
+							"    body: {",
+							"      mode: \"urlencoded\",",
+							"      urlencoded: [",
+							"        {",
+							"          key: \"Content-Type\",",
+							"          value: \"application/x-www-form-urlencoded\",",
+							"          disabled: false,",
+							"        },",
+							"        { key: \"grant_type\", value: \"password\", disabled: false },",
+							"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },",
+							"        { key: \"password\", value: \"123456\", disabled: false },",
+							"      ],",
+							"    },",
+							"  },",
+							"  function (err, res) {",
+							"    if (err) {",
+							"      throw new Error(",
+							"        \"An error occurred during authentication, please review:\\n\" +",
+							"          JSON.stringify(err)",
+							"      );",
+							"    } else {",
+							"      pm.expect(res).to.have.status(200);",
+							"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);",
+							"      pm.environment.set(\"access_token\", res.json().access_token);",
+							"",
+							"    }",
+							"  }",
+							");",
+							"",
+							"let new_supplier =  {",
+							"  name: \"A\",",
+							"  cnpj: \"11.572.592/0002-57\",",
+							"  phoneNumber: \"1111111111\",",
+							"  zipCode: \"222222222\",",
+							"  address: \"Avenida Ibirapuera\",",
+							"  number: \"144\",",
+							"  complement: \"Cj 65\",",
+							"  neighborhood: \"Ibira\",",
+							"  city: \"São Paulo\",",
+							"  state: \"SP\",",
+							"  ownerName: \"João Dias\",",
+							"  ownerEmail: \"jsd@email.com\",",
+							"  ownerPhoneNumber: \"11222233334\",",
+							"};",
+							"",
+							"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "[READ] Supplier Errors Handler",
+			"item": [
+				{
+					"name": "Get supplier not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check resquest 404 RESOURCE_NOT_FOUND\", () => {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(jsonData.code,\"ERROR\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "[UPDATE] Supplier Errors Handler",
+			"item": [
+				{
+					"name": "Create new supplier successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  supplier = pm.response.json();",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"supplier_id\",supplier.publicId);",
+									"",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora A\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update supplier previously registered without owner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.code).to.equal(\"VALIDATION_FAILED\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"{{supplier_id}}\",\n  \"name\": \"Distribuidora teste\",\n  \"cnpj\": \"11.572.592/0002-54\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Rep. do Líbano\",\n  \"number\": \"145\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update supplier with zipcode pattern wrong",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.code).to.equal(\"VALIDATION_FAILED\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"{{supplier_id}}\",\n  \"name\": \"Distribuidora teste\",\n  \"cnpj\": \"11.572.592/0002-54\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146090\",\n  \"address\": \"Avenida Rep. do Líbano\",\n  \"number\": \"145\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new supplier successfully",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  supplier = pm.response.json();",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.environment.set(\"supplier_id\",supplier.publicId);",
+									"",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Distribuidora B\",\n  \"cnpj\": \"11.572.592/0002-52\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Ibirapuera\",\n  \"number\": \"144\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update supplier with same name of other register",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.code).to.equal(\"NAME_UNIQUE_KEY_VIOLATION\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"{{supplier_id}}\",\n  \"name\": \"Distribuidora A\",\n  \"cnpj\": \"11.572.592/0002-53\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Rep. do Líbano\",\n  \"number\": \"145\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update supplier with same cnpj of other register",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");\r",
+									"\r",
+									"let new_supplier =  {\r",
+									"  name: \"Distribuidora B\",\r",
+									"  cnpj: \"11.572.592/0002-55\",\r",
+									"  phoneNumber: \"(11)987654123\",\r",
+									"  zipCode: \"04146-090\",\r",
+									"  address: \"Avenida Ibirapuera\",\r",
+									"  number: \"144\",\r",
+									"  complement: \"Cj 65\",\r",
+									"  neighborhood: \"Ibira\",\r",
+									"  city: \"São Paulo\",\r",
+									"  state: \"SP\",\r",
+									"  ownerName: \"João Dias\",\r",
+									"  ownerEmail: \"jsd@email.com\",\r",
+									"  ownerPhoneNumber: \"(11)222233334\",\r",
+									"};\r",
+									"\r",
+									"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check resquest 400 VALIDATION_FAILED\", () => {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.code).to.equal(\"NAME_UNIQUE_KEY_VIOLATION\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"{{supplier_id}}\",\n  \"name\": \"Distribuidora C\",\n  \"cnpj\": \"11.572.592/0002-51\",\n  \"phoneNumber\": \"11987654123\",\n  \"zipCode\": \"04146-090\",\n  \"address\": \"Avenida Rep. do Líbano\",\n  \"number\": \"145\",\n  \"complement\": \"Cj 65\",\n  \"neighborhood\": \"Ibira\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"ownerName\": \"João Dias\",\n  \"ownerEmail\": \"jsd@email.com\",\n  \"ownerPhoneNumber\": \"11222233334\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete supplier previosly registered",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resquest OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/{{supplier_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"{{supplier_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get last supplier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"let supplier = jsonData[0];",
+									"pm.environment.set(\"supplier_id\",supplier.publicId);",
+									"",
+									"pm.test(\"Resquest OK\", () => {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"pm.test(\"Check publicId not null or undefined\", () => {",
+									"    pm.expect(supplier.publicId).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check publicId is a string\", () => {",
+									"    pm.expect(supplier.publicId).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check name not null or undefined\", () => {",
+									"    pm.expect(supplier.name).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check name is a string\", () => {",
+									"    pm.expect(supplier.name).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Check cnpj not null or undefined\", () => {",
+									"    pm.expect(supplier.cnpj).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Validate CNPJ regex\", () => {",
+									"    pm.expect(supplier.cnpj).to.match(/^\\d{2}\\.\\d{3}\\.\\d{3}\\/\\d{4}\\-\\d{2}$/);",
+									"})",
+									"",
+									"pm.test(\"Check phoneNumber not null or undefined\", () => {",
+									"    pm.expect(supplier.phoneNumber).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check phoneNumber is a string\", () => {",
+									"    pm.expect(supplier.phoneNumber).to.be.a('string');",
+									"})",
+									"",
+									"pm.test(\"Validate phoneNumber only numbers\", () => {",
+									"    pm.expect(supplier.phoneNumber).to.match(/^[0-9]*$/);",
+									"})",
+									"",
+									"pm.test(\"Check ownerName not null or undefined\", () => {",
+									"    pm.expect(supplier.ownerName).is.not.oneOf([null, undefined])",
+									"})",
+									"",
+									"pm.test(\"Check ownerName is a string\", () => {",
+									"    pm.expect(supplier.ownerName).to.be.a('string');",
+									"})",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete last supplier",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Resquest OK\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/{{supplier_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"{{supplier_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"let base_url = pm.environment.get(\"base_url\");",
+							"pm.sendRequest(",
+							"  {",
+							"    url: base_url + \"/oauth/token\",",
+							"    method: \"POST\",",
+							"    auth: {",
+							"      type: \"basic\",",
+							"      basic: [",
+							"        { key: \"username\", value: \"cayena-test\" },",
+							"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },",
+							"      ],",
+							"    },",
+							"    body: {",
+							"      mode: \"urlencoded\",",
+							"      urlencoded: [",
+							"        {",
+							"          key: \"Content-Type\",",
+							"          value: \"application/x-www-form-urlencoded\",",
+							"          disabled: false,",
+							"        },",
+							"        { key: \"grant_type\", value: \"password\", disabled: false },",
+							"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },",
+							"        { key: \"password\", value: \"123456\", disabled: false },",
+							"      ],",
+							"    },",
+							"  },",
+							"  function (err, res) {",
+							"    if (err) {",
+							"      throw new Error(",
+							"        \"An error occurred during authentication, please review:\\n\" +",
+							"          JSON.stringify(err)",
+							"      );",
+							"    } else {",
+							"      pm.expect(res).to.have.status(200);",
+							"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);",
+							"      pm.environment.set(\"access_token\", res.json().access_token);",
+							"",
+							"    }",
+							"  }",
+							");",
+							"",
+							"let new_supplier =  {",
+							"  name: \"A\",",
+							"  cnpj: \"11.572.592/0002-57\",",
+							"  phoneNumber: \"1111111111\",",
+							"  zipCode: \"222222222\",",
+							"  address: \"Avenida Ibirapuera\",",
+							"  number: \"144\",",
+							"  complement: \"Cj 65\",",
+							"  neighborhood: \"Ibira\",",
+							"  city: \"São Paulo\",",
+							"  state: \"SP\",",
+							"  ownerName: \"João Dias\",",
+							"  ownerEmail: \"jsd@email.com\",",
+							"  ownerPhoneNumber: \"11222233334\",",
+							"};",
+							"",
+							"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "[DELETE] Supplier Errors Handler Copy",
+			"item": [
+				{
+					"name": "Delete supplier not found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let base_url = pm.environment.get(\"base_url\");\r",
+									"pm.sendRequest(\r",
+									"  {\r",
+									"    url: base_url + \"/oauth/token\",\r",
+									"    method: \"POST\",\r",
+									"    auth: {\r",
+									"      type: \"basic\",\r",
+									"      basic: [\r",
+									"        { key: \"username\", value: \"cayena-test\" },\r",
+									"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },\r",
+									"      ],\r",
+									"    },\r",
+									"    body: {\r",
+									"      mode: \"urlencoded\",\r",
+									"      urlencoded: [\r",
+									"        {\r",
+									"          key: \"Content-Type\",\r",
+									"          value: \"application/x-www-form-urlencoded\",\r",
+									"          disabled: false,\r",
+									"        },\r",
+									"        { key: \"grant_type\", value: \"password\", disabled: false },\r",
+									"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },\r",
+									"        { key: \"password\", value: \"123456\", disabled: false },\r",
+									"      ],\r",
+									"    },\r",
+									"  },\r",
+									"  function (err, res) {\r",
+									"    if (err) {\r",
+									"      throw new Error(\r",
+									"        \"An error occurred during authentication, please review:\\n\" +\r",
+									"          JSON.stringify(err)\r",
+									"      );\r",
+									"    } else {\r",
+									"      pm.expect(res).to.have.status(200);\r",
+									"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);\r",
+									"      pm.environment.set(\"access_token\", res.json().access_token);\r",
+									"\r",
+									"    }\r",
+									"  }\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let  jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check resquest 404 RESOURCE_NOT_FOUND\", () => {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.expect(jsonData.code,\"ERROR\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/suppliers/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"suppliers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"let base_url = pm.environment.get(\"base_url\");",
+							"pm.sendRequest(",
+							"  {",
+							"    url: base_url + \"/oauth/token\",",
+							"    method: \"POST\",",
+							"    auth: {",
+							"      type: \"basic\",",
+							"      basic: [",
+							"        { key: \"username\", value: \"cayena-test\" },",
+							"        { key: \"password\", value: \"dd3ed90e-667f-4248-a671-9266261dba5b\" },",
+							"      ],",
+							"    },",
+							"    body: {",
+							"      mode: \"urlencoded\",",
+							"      urlencoded: [",
+							"        {",
+							"          key: \"Content-Type\",",
+							"          value: \"application/x-www-form-urlencoded\",",
+							"          disabled: false,",
+							"        },",
+							"        { key: \"grant_type\", value: \"password\", disabled: false },",
+							"        { key: \"username\", value: \"admin@cayena.com\", disabled: false },",
+							"        { key: \"password\", value: \"123456\", disabled: false },",
+							"      ],",
+							"    },",
+							"  },",
+							"  function (err, res) {",
+							"    if (err) {",
+							"      throw new Error(",
+							"        \"An error occurred during authentication, please review:\\n\" +",
+							"          JSON.stringify(err)",
+							"      );",
+							"    } else {",
+							"      pm.expect(res).to.have.status(200);",
+							"      pm.environment.set(\"token\", \"Bearer \" + res.json().access_token);",
+							"      pm.environment.set(\"access_token\", res.json().access_token);",
+							"",
+							"    }",
+							"  }",
+							");",
+							"",
+							"let new_supplier =  {",
+							"  name: \"A\",",
+							"  cnpj: \"11.572.592/0002-57\",",
+							"  phoneNumber: \"1111111111\",",
+							"  zipCode: \"222222222\",",
+							"  address: \"Avenida Ibirapuera\",",
+							"  number: \"144\",",
+							"  complement: \"Cj 65\",",
+							"  neighborhood: \"Ibira\",",
+							"  city: \"São Paulo\",",
+							"  state: \"SP\",",
+							"  ownerName: \"João Dias\",",
+							"  ownerEmail: \"jsd@email.com\",",
+							"  ownerPhoneNumber: \"11222233334\",",
+							"};",
+							"",
+							"pm.environment.set(\"new_supplier\", JSON.stringify(new_supplier));",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "new_supplier",
+			"value": ""
+		}
+	]
+}
